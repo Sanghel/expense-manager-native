@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@insforge/sdk": "^1.2.5",
     "expo": "~54.0.33",
     "expo-auth-session": "~7.0.10",
     "expo-router": "~6.0.23",
