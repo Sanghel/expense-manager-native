@@ -14,7 +14,7 @@ import { getAccounts } from '@/lib/actions/accounts.actions'
 import { FormInput } from '@/components/ui/FormInput'
 import { SelectModal } from '@/components/ui/SelectModal'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
-import type { Category, Account } from '@/types/database.types'
+import type { Category, Account, Currency } from '@/types/database.types'
 
 const CURRENCY_OPTIONS = [
   { label: 'COP - Peso Colombiano', value: 'COP' },
@@ -34,7 +34,7 @@ export default function TransactionFormScreen() {
 
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
-  const [currency, setCurrency] = useState('COP')
+  const [currency, setCurrency] = useState<Currency>('COP')
   const [type, setType] = useState<'income' | 'expense'>('expense')
   const [categoryId, setCategoryId] = useState('')
   const [accountId, setAccountId] = useState('')
@@ -80,7 +80,7 @@ export default function TransactionFormScreen() {
     const data = {
       description: description.trim(),
       amount: parseFloat(amount),
-      currency: currency as 'COP' | 'USD' | 'VES',
+      currency,
       type,
       category_id: categoryId,
       account_id: accountId || null,
@@ -93,9 +93,9 @@ export default function TransactionFormScreen() {
 
     if (result.success) {
       router.back()
-    } else {
-      Alert.alert('Error', result.error ?? 'Error al guardar')
+      return
     }
+    Alert.alert('Error', result.error ?? 'Error al guardar')
     setSaving(false)
   }
 
@@ -273,7 +273,7 @@ export default function TransactionFormScreen() {
         title="Seleccionar Moneda"
         options={CURRENCY_OPTIONS}
         selected={currency}
-        onSelect={(v) => { setCurrency(v); setShowCurrencyPicker(false) }}
+        onSelect={(v) => { setCurrency(v as Currency); setShowCurrencyPicker(false) }}
       />
       <SelectModal
         visible={showCategoryPicker}
