@@ -138,7 +138,7 @@ export default function AccountFormScreen() {
         onPress: async () => {
           const result = await deleteAccountMovement(movId, user.id)
           if (result.success) {
-            setMovements((prev) => prev.filter((m) => m.id !== movId))
+            await refreshMovements()
             // Refresh balance display
             const accRes = await getAccountById(id, user.id)
             if (accRes.success && accRes.data) {
