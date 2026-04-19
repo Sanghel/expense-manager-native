@@ -10,6 +10,4 @@ if (!process.env.EXPO_PUBLIC_INSFORGE_ANON_KEY) {
 export const insforge = createClient({
   baseUrl: process.env.EXPO_PUBLIC_INSFORGE_URL,
   anonKey: process.env.EXPO_PUBLIC_INSFORGE_ANON_KEY,
-  // isServerMode enables refresh_token in response body (required for mobile/native)
-  isServerMode: true,
 })

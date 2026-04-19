@@ -1,6 +1,10 @@
 // app/index.tsx
-import { Redirect } from 'expo-router'
+import { View, Text } from 'react-native'
 
-export default function Index() {
-  return <Redirect href="/(dashboard)" />
+export default function TestScreen() {
+  return (
+    <View className="flex-1 items-center justify-center bg-bg">
+      <Text className="text-white text-xl">NativeWind funcionando</Text>
+    </View>
+  )
 }
