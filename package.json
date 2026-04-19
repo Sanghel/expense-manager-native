@@ -1,7 +1,7 @@
 {
   "name": "expense-manager-native",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -9,10 +9,21 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@insforge/sdk": "^1.2.5",
     "expo": "~54.0.33",
+    "expo-auth-session": "~7.0.10",
+    "expo-router": "~6.0.23",
+    "expo-secure-store": "~15.0.8",
     "expo-status-bar": "~3.0.9",
+    "expo-web-browser": "~15.0.10",
+    "nativewind": "^4.2.3",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-safe-area-context": "^5.7.0",
+    "react-native-screens": "^4.24.0",
+    "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",

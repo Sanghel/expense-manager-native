@@ -1,0 +1,145 @@
+// types/database.types.ts
+export type Currency = 'COP' | 'USD' | 'VES'
+export type TransactionType = 'income' | 'expense'
+export type BudgetPeriod = 'monthly' | 'yearly'
+export type TransactionSource = 'manual' | 'conversational'
+export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly'
+
+export interface User {
+  id: string
+  email: string
+  name: string | null
+  avatar_url: string | null
+  preferred_currency: Currency
+  created_at: string
+  updated_at: string
+}
+
+export type AccountType = 'bank' | 'digital' | 'crypto' | 'cash'
+
+export interface Account {
+  id: string
+  user_id: string
+  name: string
+  type: AccountType
+  currency: Currency
+  balance: number
+  color: string | null
+  icon: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface AccountMovement {
+  id: string
+  user_id: string
+  from_account_id: string
+  from_amount: number
+  from_currency: Currency
+  to_account_id: string
+  to_amount: number
+  to_currency: Currency
+  description: string | null
+  date: string
+  created_at: string
+}
+
+export interface AccountMovementWithAccounts extends AccountMovement {
+  from_account: Account
+  to_account: Account
+}
+
+export interface Transaction {
+  id: string
+  user_id: string
+  amount: number
+  currency: Currency
+  type: TransactionType
+  category_id: string
+  account_id: string | null
+  description: string
+  date: string
+  source: TransactionSource
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Category {
+  id: string
+  user_id: string | null
+  name: string
+  type: TransactionType
+  icon: string | null
+  color: string | null
+  created_at: string
+}
+
+export interface Budget {
+  id: string
+  user_id: string
+  category_id: string
+  amount: number
+  currency: Currency
+  period: BudgetPeriod
+  start_date: string
+  created_at: string
+}
+
+export interface ExchangeRate {
+  id: string
+  from_currency: Currency
+  to_currency: Currency
+  rate: number
+  date: string
+  created_at: string
+}
+
+export interface RecurringTransaction {
+  id: string
+  user_id: string
+  amount: number
+  currency: Currency
+  type: TransactionType
+  category_id: string
+  description: string
+  frequency: RecurrenceFrequency
+  start_date: string
+  end_date: string | null
+  is_active: boolean
+  last_generated: string | null
+  created_at: string
+}
+
+export interface SavingsGoal {
+  id: string
+  user_id: string
+  name: string
+  target_amount: number
+  current_amount: number
+  currency: Currency
+  deadline: string | null
+  is_completed: boolean
+  created_at: string
+}
+
+export interface Tag {
+  id: string
+  user_id: string
+  name: string
+  color: string
+  created_at: string
+}
+
+export interface TransactionWithCategory extends Transaction {
+  category: Category
+}
+
+export interface BudgetWithCategory extends Budget {
+  category: Category
+}
+
+export interface RecurringTransactionWithCategory extends RecurringTransaction {
+  category: Category
+}
