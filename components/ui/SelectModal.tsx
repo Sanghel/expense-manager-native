@@ -22,7 +22,13 @@ export function SelectModal({ visible, onClose, title, options, selected, onSele
         <SafeAreaView edges={['bottom']} className="bg-surface rounded-t-2xl" style={{ maxHeight: '65%' }}>
           <View className="flex-row justify-between items-center px-4 py-3 border-b border-border">
             <Text className="text-white text-base font-bold">{title}</Text>
-            <TouchableOpacity onPress={onClose} activeOpacity={0.7} className="p-2">
+            <TouchableOpacity
+              onPress={onClose}
+              activeOpacity={0.7}
+              accessibilityLabel="Close"
+              accessibilityRole="button"
+              className="p-2"
+            >
               <Text className="text-muted text-xl leading-none">✕</Text>
             </TouchableOpacity>
           </View>
@@ -31,8 +37,9 @@ export function SelectModal({ visible, onClose, title, options, selected, onSele
             keyExtractor={(item) => item.value}
             renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => onSelect(item.value)}
+                onPress={() => { onSelect(item.value); onClose(); }}
                 activeOpacity={0.7}
+                accessibilityState={{ selected: selected === item.value }}
                 className={`flex-row items-center justify-between px-4 py-4 border-b border-border ${
                   selected === item.value ? 'bg-primary/20' : ''
                 }`}
