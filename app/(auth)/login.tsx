@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
-import { makeRedirectUri } from 'expo-auth-session'
 import { insforge } from '@/lib/insforge'
 import { useAuth } from '@/context/AuthContext'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
@@ -18,7 +17,6 @@ export default function LoginScreen() {
 
   const [, , promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    redirectUri: makeRedirectUri({ scheme: 'expensemanager' }),
   })
 
   async function handleGoogleLogin() {
