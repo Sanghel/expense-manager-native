@@ -17,6 +17,7 @@ export default function LoginScreen() {
 
   const [, , promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    scopes: ['openid', 'profile', 'email'],
   })
 
   async function handleGoogleLogin() {
@@ -30,8 +31,16 @@ export default function LoginScreen() {
         return
       }
 
-      const { id_token } = result.params
-      if (!id_token) throw new Error('No id_token received from Google')
+      // expo-auth-session puede devolver el id_token en params (estilo OAuth flow)
+      // o en authentication (estilo más nuevo). Probamos ambos.
+      const id_token =
+        result.params?.id_token ??
+        (result as unknown as { authentication?: { idToken?: string } }).authentication?.idToken
+
+      if (!id_token) {
+        console.log('OAuth result without id_token:', JSON.stringify(result, null, 2))
+        throw new Error('No id_token received from Google')
+      }
 
       // Authenticate with InsForge using the Google id_token
       const { data, error: authError } = await insforge.auth.signInWithIdToken({
