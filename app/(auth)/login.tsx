@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
+import { exchangeCodeAsync } from 'expo-auth-session'
 import { insforge } from '@/lib/insforge'
 import { useAuth } from '@/context/AuthContext'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
@@ -15,7 +16,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [, , promptAsync] = Google.useAuthRequest({
+  const [request, , promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     scopes: ['openid', 'profile', 'email'],
   })
@@ -31,15 +32,25 @@ export default function LoginScreen() {
         return
       }
 
-      // expo-auth-session puede devolver el id_token en params (estilo OAuth flow)
-      // o en authentication (estilo más nuevo). Probamos ambos.
-      const id_token =
-        result.params?.id_token ??
-        (result as unknown as { authentication?: { idToken?: string } }).authentication?.idToken
+      if (!request) {
+        throw new Error('Auth request not initialized')
+      }
 
+      // Google iOS clients usan Authorization Code Flow + PKCE: el redirect devuelve
+      // un `code`, no el id_token directo. Hay que intercambiar el code por tokens.
+      const tokenResponse = await exchangeCodeAsync(
+        {
+          clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+          code: result.params.code,
+          redirectUri: request.redirectUri,
+          extraParams: { code_verifier: request.codeVerifier ?? '' },
+        },
+        { tokenEndpoint: 'https://oauth2.googleapis.com/token' }
+      )
+
+      const id_token = tokenResponse.idToken
       if (!id_token) {
-        console.log('OAuth result without id_token:', JSON.stringify(result, null, 2))
-        throw new Error('No id_token received from Google')
+        throw new Error('No id_token in token exchange response')
       }
 
       // Authenticate with InsForge using the Google id_token
