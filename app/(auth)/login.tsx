@@ -11,6 +11,23 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton'
 
 WebBrowser.maybeCompleteAuthSession()
 
+function decodeJwtPayload(jwt: string): Record<string, unknown> {
+  const base64Url = jwt.split('.')[1]
+  if (!base64Url) return {}
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  try {
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    )
+    return JSON.parse(json)
+  } catch {
+    return {}
+  }
+}
+
 export default function LoginScreen() {
   const { onSignIn } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -53,19 +70,25 @@ export default function LoginScreen() {
         throw new Error('No id_token in token exchange response')
       }
 
-      // Authenticate with InsForge using the Google id_token
-      const { data, error: authError } = await insforge.auth.signInWithIdToken({
-        provider: 'google',
-        token: id_token,
-      })
+      // Decodificamos el id_token localmente (igual que hace el web vía NextAuth).
+      // InsForge no valida contra Google — usamos InsForge solo como DB con anon key.
+      const claims = decodeJwtPayload(id_token)
+      const email = typeof claims.email === 'string' ? claims.email : ''
+      const name = typeof claims.name === 'string' ? claims.name : null
+      const avatar_url = typeof claims.picture === 'string' ? claims.picture : null
 
-      if (authError || !data) throw authError ?? new Error('Authentication failed')
+      if (!email) throw new Error('Google no devolvió un email en el token')
 
-      // user.email is directly on the user object
-      // user.profile holds name and avatar_url
-      const email = data.user?.email ?? ''
-      const accessToken = data.accessToken ?? ''
-      const refreshToken = data.refreshToken ?? ''
+      // Whitelist check
+      const { data: whitelistEntry } = await insforge.database
+        .from('whitelist')
+        .select('email')
+        .eq('email', email)
+        .maybeSingle()
+
+      if (!whitelistEntry) {
+        throw new Error('Tu email no está autorizado para usar la app')
+      }
 
       // Create user in our users table if not exists
       const { data: existingUser } = await insforge.database
@@ -77,14 +100,14 @@ export default function LoginScreen() {
       if (!existingUser) {
         await insforge.database.from('users').insert([{
           email,
-          name: data.user?.profile?.name ?? null,
-          avatar_url: data.user?.profile?.avatar_url ?? null,
+          name,
+          avatar_url,
           preferred_currency: 'COP',
         }])
       }
 
-      // Persist session and load user profile
-      await onSignIn(accessToken, refreshToken, email)
+      // Persist session (email-based) and load user profile
+      await onSignIn(email)
 
       router.replace('/(dashboard)')
     } catch (err: unknown) {

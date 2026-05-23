@@ -4,12 +4,12 @@ import * as SecureStore from 'expo-secure-store'
 import { insforge } from '@/lib/insforge'
 import type { User } from '@/types/database.types'
 
-const REFRESH_TOKEN_KEY = 'insforge_refresh_token'
+const USER_EMAIL_KEY = 'expense_manager_user_email'
 
 interface AuthState {
   user: User | null
   loading: boolean
-  onSignIn: (accessToken: string, refreshToken: string, email: string) => Promise<void>
+  onSignIn: (email: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -30,22 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function restoreSession() {
     try {
-      const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY)
-      if (!refreshToken) return
-
-      const { data, error } = await insforge.auth.refreshSession({ refreshToken })
-      if (error || !data) {
-        await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY)
-        return
-      }
-
-      if (data.refreshToken) {
-        await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, data.refreshToken)
-      }
-
-      await loadUserProfile(data.user?.email ?? '')
+      const email = await SecureStore.getItemAsync(USER_EMAIL_KEY)
+      if (!email) return
+      await loadUserProfile(email)
     } catch {
-      await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY)
+      await SecureStore.deleteItemAsync(USER_EMAIL_KEY)
     } finally {
       setLoading(false)
     }
@@ -62,16 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data) setUser(data as User)
   }
 
-  async function onSignIn(accessToken: string, refreshToken: string, email: string) {
-    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken)
+  async function onSignIn(email: string) {
+    await SecureStore.setItemAsync(USER_EMAIL_KEY, email)
     await loadUserProfile(email)
   }
 
   async function signOut() {
-    try {
-      await insforge.auth.signOut()
-    } catch { /* ignore */ }
-    await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY)
+    await SecureStore.deleteItemAsync(USER_EMAIL_KEY)
     setUser(null)
   }
 
