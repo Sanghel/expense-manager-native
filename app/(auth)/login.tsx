@@ -36,6 +36,10 @@ export default function LoginScreen() {
   const [request, , promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     scopes: ['openid', 'profile', 'email'],
+    // Deshabilitamos el auto-exchange interno del SDK: nosotros hacemos el
+    // exchange manualmente más abajo. Sin esto hay race condition (el SDK
+    // consume el code primero → nuestro exchange tira invalid_grant).
+    shouldAutoExchangeCode: false,
   })
 
   async function handleGoogleLogin() {
