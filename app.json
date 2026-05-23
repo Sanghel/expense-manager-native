@@ -14,7 +14,17 @@
       "backgroundColor": "#0f0f14"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sanghel.expensemanager",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.445491202800-b7774o1k5jpdgatul6sqjmpuqffv9mj2"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
