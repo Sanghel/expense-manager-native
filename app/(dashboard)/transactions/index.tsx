@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   TextInput,
-  ScrollView,
 } from 'react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { router, useFocusEffect } from 'expo-router'
@@ -259,12 +258,7 @@ export default function TransactionsScreen() {
       </View>
 
       {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}
-        className="flex-grow-0"
-      >
+      <View className="flex-row flex-wrap px-4 pb-2 gap-2">
         <FilterChip
           label="Tipo"
           value={TYPE_LABEL_BY_VALUE[typeFilter]}
@@ -293,13 +287,13 @@ export default function TransactionsScreen() {
           <TouchableOpacity
             onPress={clearAllFilters}
             activeOpacity={0.6}
-            className="flex-row items-center px-3 py-2 ml-2 rounded-full border border-red-500/50"
+            className="flex-row items-center px-3 py-2 rounded-full border border-red-500/50"
           >
             <Icon name="x" size={14} color="#f87171" />
             <Text className="text-red-400 text-sm ml-1">Limpiar</Text>
           </TouchableOpacity>
         ) : null}
-      </ScrollView>
+      </View>
 
       {loading ? (
         <View className="flex-1 items-center justify-center">
@@ -414,7 +408,7 @@ function FilterChip({ label, value, active, onPress }: FilterChipProps) {
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`flex-row items-center px-3 py-2 mr-2 rounded-full border ${
+      className={`flex-row items-center px-3 py-2 rounded-full border ${
         active ? 'bg-primary/20 border-primary' : 'bg-surface border-border'
       }`}
     >
