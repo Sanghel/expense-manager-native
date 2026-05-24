@@ -134,26 +134,3 @@ export function ChartContainer({
   )
 }
 
-/** Mock data para verificación visual en T-4.1. Se borra en T-4.2. */
-export function DemoAccumulatedBalanceChart() {
-  const mock: TimeSeriesPoint[] = [
-    { date: '2026-04-01', value: 1_200_000 },
-    { date: '2026-04-05', value: 1_350_000 },
-    { date: '2026-04-10', value: 1_300_000 },
-    { date: '2026-04-15', value: 1_550_000 },
-    { date: '2026-04-20', value: 1_700_000 },
-    { date: '2026-04-25', value: 1_650_000 },
-    { date: '2026-04-30', value: 1_900_000 },
-    { date: '2026-05-05', value: 1_850_000 },
-    { date: '2026-05-10', value: 2_100_000 },
-    { date: '2026-05-15', value: 2_250_000 },
-    { date: '2026-05-20', value: 2_400_000 },
-  ]
-  return (
-    <AccumulatedBalanceChart
-      data={mock}
-      title="Balance acumulado"
-      subtitle="Últimos 30 días · COP"
-    />
-  )
-}
