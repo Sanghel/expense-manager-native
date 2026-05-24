@@ -48,11 +48,11 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
-        name="accounts"
+        name="reports"
         options={{
-          title: 'Cuentas',
+          title: 'Reportes',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="wallet" color={color} size={size} />
+            <Icon name="chart" color={color} size={size} />
           ),
         }}
       />
@@ -65,6 +65,18 @@ export default function DashboardLayout() {
           ),
         }}
       />
+
+      {/*
+        Hubs accesibles desde la pantalla "Más" — NO se exponen como tabs
+        directos para mantener el bottom bar limpio. expo-router los
+        descubre automáticamente al tener _layout.tsx; href: null los
+        oculta del tab bar pero quedan navegables con router.push('/xxx').
+      */}
+      <Tabs.Screen name="accounts" options={{ href: null }} />
+      <Tabs.Screen name="categories" options={{ href: null }} />
+      <Tabs.Screen name="budgets" options={{ href: null }} />
+      <Tabs.Screen name="savings" options={{ href: null }} />
+      <Tabs.Screen name="loans" options={{ href: null }} />
     </Tabs>
   )
 }

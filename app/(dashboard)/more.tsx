@@ -142,22 +142,27 @@ export default function MoreScreen() {
         {/* Datos */}
         <SectionHeader title="Datos" />
         <SettingsRow
-          icon="dashboard"
+          icon="wallet"
+          label="Cuentas"
+          onPress={() => router.push('/accounts')}
+        />
+        <SettingsRow
+          icon="folder-tree"
           label="Categorías"
           onPress={() => router.push('/categories')}
         />
         <SettingsRow
-          icon="wallet"
+          icon="target"
           label="Presupuestos"
           onPress={() => router.push('/budgets')}
         />
         <SettingsRow
-          icon="arrow-up-circle"
+          icon="piggy"
           label="Metas de ahorro"
           onPress={() => router.push('/savings')}
         />
         <SettingsRow
-          icon="repeat"
+          icon="hand-coins"
           label="Préstamos"
           onPress={() => router.push('/loans')}
         />
