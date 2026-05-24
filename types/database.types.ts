@@ -141,6 +141,16 @@ export interface SavingsGoal {
   created_at: string
 }
 
+export interface SavingsContribution {
+  id: string
+  goal_id: string
+  user_id: string
+  amount: number
+  currency: Currency
+  account_id: string | null
+  created_at: string
+}
+
 export interface Tag {
   id: string
   user_id: string
@@ -213,6 +223,12 @@ export interface TransactionWithTags extends Transaction {
 
 export interface BudgetWithCategory extends Budget {
   category: Category
+}
+
+export interface BudgetWithSpent extends BudgetWithCategory {
+  spent: number
+  periodStart: string
+  periodEnd: string
 }
 
 export interface RecurringTransactionWithCategory extends RecurringTransaction {
