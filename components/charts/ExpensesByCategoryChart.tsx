@@ -79,22 +79,3 @@ export function ExpensesByCategoryChart({
   )
 }
 
-/** Mock data para verificación visual. Se borra en T-4.2. */
-export function DemoExpensesByCategoryChart() {
-  const mock: CategoryAggregate[] = [
-    { name: 'Mercado', icon: '🛒', color: '#10b981', value: 850_000 },
-    { name: 'Restaurantes', icon: '🍽️', color: '#f59e0b', value: 420_000 },
-    { name: 'Transporte', icon: '🚗', color: '#3b82f6', value: 280_000 },
-    { name: 'Servicios', icon: '💡', color: '#a855f7', value: 195_000 },
-    { name: 'Salud', icon: '🏥', color: '#ef4444', value: 130_000 },
-    { name: 'Entretenimiento', icon: '🎬', color: '#ec4899', value: 95_000 },
-  ]
-  return (
-    <ExpensesByCategoryChart
-      data={mock}
-      currency="COP"
-      title="Gastos por categoría"
-      subtitle="Últimos 30 días"
-    />
-  )
-}

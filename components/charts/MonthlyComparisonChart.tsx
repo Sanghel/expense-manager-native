@@ -109,21 +109,3 @@ export function MonthlyComparisonChart({
   )
 }
 
-/** Mock data para verificación visual. Se borra en T-4.2. */
-export function DemoMonthlyComparisonChart() {
-  const mock: MonthlyPoint[] = [
-    { label: 'dic', income: 3_200_000, expense: 2_800_000 },
-    { label: 'ene', income: 3_500_000, expense: 3_100_000 },
-    { label: 'feb', income: 3_300_000, expense: 2_900_000 },
-    { label: 'mar', income: 3_700_000, expense: 3_400_000 },
-    { label: 'abr', income: 4_100_000, expense: 3_500_000 },
-    { label: 'may', income: 3_900_000, expense: 3_200_000 },
-  ]
-  return (
-    <MonthlyComparisonChart
-      data={mock}
-      title="Ingresos vs gastos"
-      subtitle="Últimos 6 meses"
-    />
-  )
-}
