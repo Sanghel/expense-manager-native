@@ -1,4 +1,7 @@
-// app/(dashboard)/more.tsx
+// app/(dashboard)/profile/index.tsx
+//
+// Pantalla de perfil/configuración. Reemplaza al tab "Más" eliminado en
+// T-5.2 — ahora se accede desde el sheet de Quick Actions (último tile).
 import { useState } from 'react'
 import {
   View,
@@ -33,7 +36,7 @@ function formatDate(iso: string | null): string {
   })
 }
 
-export default function MoreScreen() {
+export default function ProfileScreen() {
   const { user, signOut, refreshUser } = useAuth()
   const [showCurrency, setShowCurrency] = useState(false)
   const [savingCurrency, setSavingCurrency] = useState(false)
@@ -67,8 +70,13 @@ export default function MoreScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-bg">
-      <View className="px-4 py-3 border-b border-border">
-        <Text className="text-white text-xl font-bold">Más opciones</Text>
+      {/* Header con back */}
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
+          <Text className="text-primary text-base">← Volver</Text>
+        </TouchableOpacity>
+        <Text className="text-white text-base font-bold">Perfil</Text>
+        <View style={{ width: 60 }} />
       </View>
 
       <ScrollView
