@@ -11,6 +11,8 @@ interface AuthState {
   loading: boolean
   onSignIn: (email: string) => Promise<void>
   signOut: () => Promise<void>
+  /** Re-carga el user actual desde DB. Usar tras actualizar el perfil. */
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState>({
@@ -18,6 +20,7 @@ const AuthContext = createContext<AuthState>({
   loading: true,
   onSignIn: async () => {},
   signOut: async () => {},
+  refreshUser: async () => {},
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -61,8 +64,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
+  async function refreshUser() {
+    const email = await SecureStore.getItemAsync(USER_EMAIL_KEY)
+    if (!email) return
+    await loadUserProfile(email)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, onSignIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, onSignIn, signOut, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )
