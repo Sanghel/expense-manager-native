@@ -76,9 +76,9 @@ export default function DashboardLayout() {
         <Tabs.Screen
           name="quick-actions"
           options={{
-            title: 'Crear',
+            title: 'Menú',
             tabBarIcon: ({ color, size }) => (
-              <Icon name="plus" color={color} size={size + 4} />
+              <Icon name="menu" color={color} size={size} />
             ),
           }}
           listeners={{
