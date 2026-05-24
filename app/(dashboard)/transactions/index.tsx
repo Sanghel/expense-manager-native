@@ -415,17 +415,17 @@ function FilterChip({ label, value, active, onPress }: FilterChipProps) {
       onPress={onPress}
       activeOpacity={0.7}
       className={`flex-row items-center px-3 py-2 mr-2 rounded-full border ${
-        active
-          ? 'bg-primary/20 border-primary'
-          : 'bg-surface border-border'
+        active ? 'bg-primary/20 border-primary' : 'bg-surface border-border'
       }`}
     >
-      <Text className={`text-xs ${active ? 'text-primary' : 'text-muted'}`}>
-        {label}:
-      </Text>
-      <Text className={`text-sm font-medium ml-1 ${active ? 'text-white' : 'text-white'}`}>
-        {value}
-      </Text>
+      {active ? (
+        <>
+          <Text className="text-xs text-primary">{label}:</Text>
+          <Text className="text-sm font-medium ml-1 text-white">{value}</Text>
+        </>
+      ) : (
+        <Text className="text-sm font-medium text-muted">{label}</Text>
+      )}
     </TouchableOpacity>
   )
 }
