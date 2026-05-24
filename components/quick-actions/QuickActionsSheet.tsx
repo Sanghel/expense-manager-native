@@ -67,7 +67,7 @@ const TILES: ActionTile[] = [
   {
     icon: 'arrow-up-circle',
     label: 'Recordatorios',
-    comingSoon: 'Recordatorios disponibles próximamente (T-5.3)',
+    route: '/reminders',
     color: '#ec4899',
   },
 ]
