@@ -1,9 +1,20 @@
 // types/database.types.ts
 export type Currency = 'COP' | 'USD' | 'VES'
 export type TransactionType = 'income' | 'expense'
+export type CategoryType = 'income' | 'expense' | 'both'
 export type BudgetPeriod = 'monthly' | 'yearly'
-export type TransactionSource = 'manual' | 'conversational'
+export type TransactionSource = 'manual' | 'conversational' | 'import' | 'gmail'
 export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly'
+export type ReminderFrequency = 'once' | 'weekly' | 'monthly' | 'yearly'
+export type LoanType = 'lent' | 'borrowed'
+export type LoanStatus = 'active' | 'settled'
+export type ProcessedEmailOutcome = 'auto_registered' | 'skipped' | 'error'
+
+export interface Whitelist {
+  id: string
+  email: string
+  created_at: string
+}
 
 export interface User {
   id: string
@@ -11,11 +22,14 @@ export interface User {
   name: string | null
   avatar_url: string | null
   preferred_currency: Currency
+  gmail_refresh_token: string | null
+  gmail_connected_at: string | null
+  gmail_last_synced_at: string | null
   created_at: string
   updated_at: string
 }
 
-export type AccountType = 'bank' | 'digital' | 'crypto' | 'cash'
+export type AccountType = 'bank' | 'digital' | 'crypto' | 'cash' | 'card'
 
 export interface Account {
   id: string
@@ -24,9 +38,12 @@ export interface Account {
   type: AccountType
   currency: Currency
   balance: number
+  credit_limit: number | null
   color: string | null
   icon: string | null
+  last_four: string | null
   is_active: boolean
+  is_default: boolean
   created_at: string
   updated_at: string
 }
@@ -56,7 +73,7 @@ export interface Transaction {
   amount: number
   currency: Currency
   type: TransactionType
-  category_id: string
+  category_id: string | null
   account_id: string | null
   description: string
   date: string
@@ -68,9 +85,9 @@ export interface Transaction {
 
 export interface Category {
   id: string
-  user_id: string | null
+  user_id: string | null // null = predefined
   name: string
-  type: TransactionType
+  type: CategoryType
   icon: string | null
   color: string | null
   created_at: string
@@ -132,8 +149,66 @@ export interface Tag {
   created_at: string
 }
 
+export interface Loan {
+  id: string
+  user_id: string
+  person_name: string
+  amount: number
+  paid_amount: number
+  currency: Currency
+  account_id: string | null
+  type: LoanType
+  status: LoanStatus
+  notes: string | null
+  created_at: string
+  updated_at: string
+  settled_at: string | null
+}
+
+export interface LoanPayment {
+  id: string
+  loan_id: string
+  user_id: string
+  amount: number
+  currency: Currency
+  date: string
+  notes: string | null
+  created_at: string
+}
+
+export interface Reminder {
+  id: string
+  user_id: string
+  description: string
+  category_id: string | null
+  account_id: string | null
+  frequency: ReminderFrequency
+  day_of_week: number | null
+  day_of_month: number | null
+  month_of_year: number | null
+  specific_date: string | null
+  is_active: boolean
+  created_at: string
+}
+
+export interface ProcessedEmail {
+  gmail_message_id: string
+  user_id: string
+  outcome: ProcessedEmailOutcome
+  transaction_id: string | null
+  error_message: string | null
+  processed_at: string
+}
+
+// With relations
+
 export interface TransactionWithCategory extends Transaction {
   category: Category
+}
+
+export interface TransactionWithTags extends Transaction {
+  category: Category
+  tags?: Tag[]
 }
 
 export interface BudgetWithCategory extends Budget {
@@ -142,4 +217,12 @@ export interface BudgetWithCategory extends Budget {
 
 export interface RecurringTransactionWithCategory extends RecurringTransaction {
   category: Category
+}
+
+export interface LoanWithAccount extends Loan {
+  account: Pick<Account, 'id' | 'name' | 'currency' | 'icon'> | null
+}
+
+export interface ReminderWithCategory extends Reminder {
+  category: Category | null
 }

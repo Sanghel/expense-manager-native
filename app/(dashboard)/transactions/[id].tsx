@@ -61,7 +61,7 @@ export default function TransactionFormScreen() {
           setAmount(String(tx.amount))
           setCurrency(tx.currency)
           setType(tx.type)
-          setCategoryId(tx.category_id)
+          setCategoryId(tx.category_id ?? '')
           setAccountId(tx.account_id ?? '')
           setDate(tx.date)
           setNotes(tx.notes ?? '')
@@ -114,7 +114,7 @@ export default function TransactionFormScreen() {
     ])
   }
 
-  const filteredCategories = categories.filter((c) => c.type === type)
+  const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both')
   const categoryOptions = filteredCategories.map((c) => ({
     label: `${c.icon ?? ''} ${c.name}`.trim(),
     value: c.id,
