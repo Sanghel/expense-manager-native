@@ -56,6 +56,15 @@ export default function DashboardLayout() {
           }}
         />
         <Tabs.Screen
+          name="calendar"
+          options={{
+            title: 'Calendario',
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="calendar" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="reports"
           options={{
             title: 'Reportes',
