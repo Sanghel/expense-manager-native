@@ -14,6 +14,11 @@ import {
   Pencil,
   Search,
   Settings,
+  BarChart3,
+  Target,
+  PiggyBank,
+  HandCoins,
+  FolderTree,
 } from 'lucide-react-native'
 
 /**
@@ -42,6 +47,11 @@ const ICONS = {
   edit: Pencil,
   search: Search,
   settings: Settings,
+  chart: BarChart3,
+  target: Target,
+  piggy: PiggyBank,
+  'hand-coins': HandCoins,
+  'folder-tree': FolderTree,
 } as const
 
 export type IconName = keyof typeof ICONS
