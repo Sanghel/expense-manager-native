@@ -20,6 +20,10 @@ import { Icon, type IconName } from '@/components/ui/Icon'
 import { toast } from '@/components/ui/Toast'
 import type { Currency } from '@/types/database.types'
 
+// Los hubs (Cuentas, Categorías, Presupuestos, Metas, Préstamos) están en
+// el menú principal del bottom bar. Esta pantalla se enfoca solo en perfil,
+// preferencias y conexiones del user.
+
 const CURRENCY_OPTIONS: { label: string; value: string }[] = [
   { label: 'COP — Peso Colombiano', value: 'COP' },
   { label: 'USD — Dólar', value: 'USD' },
@@ -146,34 +150,6 @@ export default function ProfileScreen() {
             </View>
           ) : null}
         </View>
-
-        {/* Datos */}
-        <SectionHeader title="Datos" />
-        <SettingsRow
-          icon="wallet"
-          label="Cuentas"
-          onPress={() => router.push('/accounts')}
-        />
-        <SettingsRow
-          icon="folder-tree"
-          label="Categorías"
-          onPress={() => router.push('/categories')}
-        />
-        <SettingsRow
-          icon="target"
-          label="Presupuestos"
-          onPress={() => router.push('/budgets')}
-        />
-        <SettingsRow
-          icon="piggy"
-          label="Metas de ahorro"
-          onPress={() => router.push('/savings')}
-        />
-        <SettingsRow
-          icon="hand-coins"
-          label="Préstamos"
-          onPress={() => router.push('/loans')}
-        />
 
         {/* Sign out */}
         <View className="px-4 pt-10">
