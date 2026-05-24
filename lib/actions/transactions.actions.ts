@@ -5,22 +5,82 @@ import {
   type CreateTransactionInput,
   type UpdateTransactionInput,
 } from '@/lib/validations/transaction'
-import type { TransactionWithCategory } from '@/types/database.types'
+import type { TransactionWithCategory, TransactionType } from '@/types/database.types'
 
+export interface GetTransactionsFilters {
+  search?: string
+  type?: TransactionType | 'all'
+  categoryId?: string | null
+  accountId?: string | null
+  /** Formato 'YYYY-MM'. Si presente, filtra al mes calendar exacto. */
+  month?: string | null
+}
+
+export interface GetTransactionsPagination {
+  page?: number
+  pageSize?: number
+}
+
+export interface GetTransactionsResult {
+  items: TransactionWithCategory[]
+  hasMore: boolean
+}
+
+/**
+ * Lista transacciones del user con filtros y paginación server-side.
+ * Sin params, devuelve la primera página de 20 ordenadas por fecha descendente.
+ *
+ * `hasMore` se determina pidiendo `pageSize + 1` rows y chequeando si llegan
+ * más de las esperadas. Si sí, devolvemos solo `pageSize` y marcamos hasMore.
+ */
 export async function getTransactions(
   userId: string,
-  limit = 100
-): Promise<{ success: boolean; data?: TransactionWithCategory[]; error?: string }> {
+  filters: GetTransactionsFilters = {},
+  pagination: GetTransactionsPagination = {}
+): Promise<{ success: boolean; data?: GetTransactionsResult; error?: string }> {
   if (!userId) return { success: false, error: 'User ID requerido' }
+
+  const { search, type, categoryId, accountId, month } = filters
+  const { page = 1, pageSize = 20 } = pagination
+
   try {
-    const { data, error } = await insforge.database
+    let query = insforge.database
       .from('transactions')
       .select('*, category:categories(*)')
       .eq('user_id', userId)
-      .order('date', { ascending: false })
-      .limit(limit)
+
+    if (search && search.trim()) {
+      query = query.ilike('description', `%${search.trim()}%`)
+    }
+    if (type && type !== 'all') {
+      query = query.eq('type', type)
+    }
+    if (categoryId) {
+      query = query.eq('category_id', categoryId)
+    }
+    if (accountId) {
+      query = query.eq('account_id', accountId)
+    }
+    if (month) {
+      const [year, mo] = month.split('-').map(Number)
+      const start = new Date(year, mo - 1, 1)
+      const end = new Date(year, mo, 1)
+      const startDate = start.toISOString().slice(0, 10)
+      const endDate = end.toISOString().slice(0, 10)
+      query = query.gte('date', startDate).lt('date', endDate)
+    }
+
+    const from = (page - 1) * pageSize
+    const to = from + pageSize // pedimos 1 extra para detectar hasMore
+
+    const { data, error } = await query.order('date', { ascending: false }).range(from, to)
     if (error) throw error
-    return { success: true, data: (data ?? []) as TransactionWithCategory[] }
+
+    const rows = (data ?? []) as TransactionWithCategory[]
+    const hasMore = rows.length > pageSize
+    const items = hasMore ? rows.slice(0, pageSize) : rows
+
+    return { success: true, data: { items, hasMore } }
   } catch {
     return { success: false, error: 'Error al cargar transacciones' }
   }
