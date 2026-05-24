@@ -14,6 +14,7 @@ import { getAccounts } from '@/lib/actions/accounts.actions'
 import { FormInput } from '@/components/ui/FormInput'
 import { SelectModal } from '@/components/ui/SelectModal'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
+import { Icon } from '@/components/ui/Icon'
 import type { Category, Account, Currency } from '@/types/database.types'
 
 const CURRENCY_OPTIONS = [
@@ -172,9 +173,16 @@ export default function TransactionFormScreen() {
                 type === t ? 'bg-primary border-primary' : 'bg-transparent border-border'
               }`}
             >
-              <Text className="text-white font-medium">
-                {t === 'expense' ? '🔴 Gasto' : '💚 Ingreso'}
-              </Text>
+              <View className="flex-row items-center gap-2">
+                <Icon
+                  name={t === 'expense' ? 'arrow-down-circle' : 'arrow-up-circle'}
+                  size={18}
+                  color="white"
+                />
+                <Text className="text-white font-medium">
+                  {t === 'expense' ? 'Gasto' : 'Ingreso'}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
