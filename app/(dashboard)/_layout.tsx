@@ -1,9 +1,9 @@
 // app/(dashboard)/_layout.tsx
 import { Tabs, router } from 'expo-router'
 import { useEffect } from 'react'
-import { Text } from 'react-native'
 import { useAuth } from '@/context/AuthContext'
 import { colors } from '@/constants/theme'
+import { Icon } from '@/components/ui/Icon'
 
 export default function DashboardLayout() {
   const { user, loading } = useAuth()
@@ -33,28 +33,36 @@ export default function DashboardLayout() {
         name="index"
         options={{
           title: 'Dashboard',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📊</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="dashboard" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="transactions"
         options={{
           title: 'Transacciones',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>💸</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="transactions" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="accounts"
         options={{
           title: 'Cuentas',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🏦</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="wallet" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="more"
         options={{
           title: 'Más',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>☰</Text>,
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="menu" color={color} size={size} />
+          ),
         }}
       />
     </Tabs>
