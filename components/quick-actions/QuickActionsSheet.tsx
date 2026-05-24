@@ -65,7 +65,7 @@ const TILES: ActionTile[] = [
     color: '#a855f7',
   },
   {
-    icon: 'arrow-up-circle',
+    icon: 'bell',
     label: 'Recordatorios',
     route: '/reminders',
     color: '#ec4899',

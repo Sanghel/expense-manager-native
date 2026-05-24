@@ -152,6 +152,12 @@ export default function RemindersScreen() {
 
 function ReminderCard({ reminder }: { reminder: ReminderWithCategory }) {
   const inactive = !reminder.is_active
+  // Avatar = icono + color de la categoría (mismo patrón que transacciones).
+  // Fallback a campanita si el recordatorio no tiene categoría asignada.
+  const hasCategory = !!reminder.category
+  const avatarColor = reminder.category?.color ?? '#4F46E5'
+  const avatarIcon = reminder.category?.icon ?? '🔔'
+
   return (
     <TouchableOpacity
       onPress={() => router.push(`/reminders/${reminder.id}`)}
@@ -159,13 +165,19 @@ function ReminderCard({ reminder }: { reminder: ReminderWithCategory }) {
       className="mx-4 mb-3 bg-surface border border-border rounded-2xl p-4"
       style={{ opacity: inactive ? 0.5 : 1 }}
     >
-      <View className="flex-row items-center mb-1">
-        <Text className="text-2xl mr-3">🔔</Text>
+      <View className="flex-row items-center">
+        <View
+          style={{ backgroundColor: avatarColor }}
+          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+        >
+          <Text className="text-xl">{avatarIcon}</Text>
+        </View>
         <View className="flex-1">
           <Text className="text-white text-base font-semibold" numberOfLines={1}>
             {reminder.description}
           </Text>
-          <Text className="text-muted text-xs mt-0.5">
+          <Text className="text-muted text-xs mt-0.5" numberOfLines={1}>
+            {hasCategory ? `${reminder.category!.name} · ` : ''}
             {describeReminder(reminder)} · {FREQUENCY_LABEL[reminder.frequency]}
           </Text>
         </View>
@@ -175,18 +187,6 @@ function ReminderCard({ reminder }: { reminder: ReminderWithCategory }) {
           </View>
         ) : null}
       </View>
-
-      {reminder.category ? (
-        <View className="flex-row items-center mt-2 ml-9">
-          <View
-            style={{ backgroundColor: reminder.category.color ?? '#4F46E5' }}
-            className="w-5 h-5 rounded-full items-center justify-center mr-1.5"
-          >
-            <Text className="text-xs">{reminder.category.icon ?? '📂'}</Text>
-          </View>
-          <Text className="text-muted text-xs">{reminder.category.name}</Text>
-        </View>
-      ) : null}
     </TouchableOpacity>
   )
 }

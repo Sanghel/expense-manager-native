@@ -19,6 +19,7 @@ import {
   PiggyBank,
   HandCoins,
   FolderTree,
+  Bell,
 } from 'lucide-react-native'
 
 /**
@@ -52,6 +53,7 @@ const ICONS = {
   piggy: PiggyBank,
   'hand-coins': HandCoins,
   'folder-tree': FolderTree,
+  bell: Bell,
 } as const
 
 export type IconName = keyof typeof ICONS
