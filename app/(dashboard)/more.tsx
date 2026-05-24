@@ -156,6 +156,11 @@ export default function MoreScreen() {
           label="Metas de ahorro"
           onPress={() => router.push('/savings')}
         />
+        <SettingsRow
+          icon="repeat"
+          label="Préstamos"
+          onPress={() => router.push('/loans')}
+        />
 
         {/* Sign out */}
         <View className="px-4 pt-10">
