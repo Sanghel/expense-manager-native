@@ -215,6 +215,12 @@ export interface BudgetWithCategory extends Budget {
   category: Category
 }
 
+export interface BudgetWithSpent extends BudgetWithCategory {
+  spent: number
+  periodStart: string
+  periodEnd: string
+}
+
 export interface RecurringTransactionWithCategory extends RecurringTransaction {
   category: Category
 }
