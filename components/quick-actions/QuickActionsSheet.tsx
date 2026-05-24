@@ -20,40 +20,53 @@ interface ActionTile {
   color: string
 }
 
+/**
+ * Tiles del menú principal. Mezcla de **accesos directos** (Transacción nueva,
+ * único shortcut a creación porque es la acción más frecuente) y **navegación
+ * a listados** (el resto — para ver, gestionar o crear desde su pantalla).
+ *
+ * No incluimos Transacciones como listado porque ya es un tab del bottom bar.
+ */
 const TILES: ActionTile[] = [
   {
-    icon: 'transactions',
-    label: 'Transacción',
+    icon: 'plus',
+    label: 'Nueva transacción',
     route: '/transactions/new',
     color: '#4F46E5',
   },
   {
+    icon: 'wallet',
+    label: 'Cuentas',
+    route: '/accounts',
+    color: '#0ea5e9',
+  },
+  {
     icon: 'folder-tree',
-    label: 'Categoría',
-    route: '/categories/new',
+    label: 'Categorías',
+    route: '/categories',
     color: '#06b6d4',
   },
   {
     icon: 'target',
-    label: 'Presupuesto',
-    route: '/budgets/new',
+    label: 'Presupuestos',
+    route: '/budgets',
     color: '#f59e0b',
   },
   {
     icon: 'piggy',
-    label: 'Meta de ahorro',
-    route: '/savings/new',
+    label: 'Metas de ahorro',
+    route: '/savings',
     color: '#10b981',
   },
   {
     icon: 'hand-coins',
-    label: 'Préstamo',
-    route: '/loans/new',
+    label: 'Préstamos',
+    route: '/loans',
     color: '#a855f7',
   },
   {
     icon: 'arrow-up-circle',
-    label: 'Recordatorio',
+    label: 'Recordatorios',
     comingSoon: 'Recordatorios disponibles próximamente (T-5.3)',
     color: '#ec4899',
   },
@@ -84,9 +97,9 @@ export function QuickActionsSheet({ visible, onClose }: QuickActionsSheetProps) 
 
   return (
     <BottomSheet visible={visible} onClose={onClose} maxHeightPercent={75}>
-      <Text className="text-white text-lg font-bold mb-1">Crear nuevo</Text>
+      <Text className="text-white text-lg font-bold mb-1">Menú principal</Text>
       <Text className="text-muted text-xs mb-4">
-        Elige qué quieres registrar
+        Accesos rápidos y secciones de tu app
       </Text>
 
       {/* Grid 2 col de tiles */}
