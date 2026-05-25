@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getCategories } from '@/lib/actions/categories.actions'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ListLoadingSkeleton } from '@/components/ui/ListLoadingSkeleton'
 import { toast } from '@/components/ui/Toast'
 import type { Category, CategoryType } from '@/types/database.types'
 
@@ -59,9 +60,14 @@ export default function CategoriesScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-bg items-center justify-center">
-        <ActivityIndicator color="#4F46E5" />
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+          <View style={{ width: 60 }} />
+          <Text className="text-white text-base font-bold">Categorías</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <ListLoadingSkeleton />
+      </SafeAreaView>
     )
   }
 

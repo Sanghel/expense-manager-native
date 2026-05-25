@@ -13,6 +13,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getSavingsGoals } from '@/lib/actions/savings.actions'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ListLoadingSkeleton } from '@/components/ui/ListLoadingSkeleton'
 import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { SavingsGoal } from '@/types/database.types'
@@ -63,9 +64,14 @@ export default function SavingsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-bg items-center justify-center">
-        <ActivityIndicator color="#4F46E5" />
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+          <View style={{ width: 60 }} />
+          <Text className="text-white text-base font-bold">Metas de ahorro</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <ListLoadingSkeleton />
+      </SafeAreaView>
     )
   }
 
