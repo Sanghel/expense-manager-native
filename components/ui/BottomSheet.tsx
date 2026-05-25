@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { Modal, Pressable, View, useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +28,13 @@ interface BottomSheetProps {
  *
  * NO incluye drag-to-dismiss ni snap points (para eso `@gorhom/bottom-sheet`).
  * Sirve para menús de acciones rápidas, action sheets simples y pickers.
+ *
+ * **Bug fix:** sin `presentationStyle="overFullScreen"` en iOS, el Modal NO
+ * cubre el área del tab bar / safe area inferior — el overlay queda "corto"
+ * y el tab bar se ve dimmed pero visible debajo del card. Con overFullScreen
+ * el modal sí cubre toda la ventana. Además aplicamos `paddingBottom` con
+ * el safe area inset para que el contenido del card no quede pegado al
+ * home indicator.
  */
 export function BottomSheet({
   visible,
@@ -35,6 +43,7 @@ export function BottomSheet({
   maxHeightPercent = 60,
 }: BottomSheetProps) {
   const { height } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
   const translateY = useSharedValue(height) // empieza fuera de pantalla (abajo)
 
   useEffect(() => {
@@ -76,18 +85,28 @@ export function BottomSheet({
       animationType="none" // animamos nosotros con reanimated
       onRequestClose={handleClose}
       statusBarTranslucent
+      presentationStyle="overFullScreen"
     >
-      {/* Overlay tap-to-close */}
-      <Pressable
-        className="flex-1 bg-black/60 justify-end"
-        onPress={handleClose}
-      >
-        {/* El card mismo no propaga el tap */}
-        <Pressable onPress={() => {}}>
+      {/* Overlay tap-to-close — cubre toda la ventana */}
+      <Pressable className="flex-1 bg-black/60" onPress={handleClose}>
+        {/*
+          Container del card con posicionamiento absoluto al borde inferior
+          REAL de la ventana. Usar `justify-end` en el flex parent deja un
+          gap cuando el modal no cubre exactamente todo el viewport
+          (caso típico cuando el tab bar de expo-router se renderiza en
+          una capa intermedia). Con `bottom: 0` absoluto el card siempre
+          queda pegado al borde de la pantalla y el safe area inset se
+          mete como padding interno para los botones.
+        */}
+        <Pressable
+          onPress={() => {}}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
+        >
           <Animated.View
             style={[
               {
                 maxHeight: `${maxHeightPercent}%`,
+                paddingBottom: insets.bottom,
               },
               animatedStyle,
             ]}
