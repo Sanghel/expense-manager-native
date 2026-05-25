@@ -5,7 +5,7 @@ import { BottomSheet } from '@/components/ui/BottomSheet'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
 import { formatCurrency } from '@/lib/utils/currency'
 import type {
-  Reminder,
+  ReminderWithCategory,
   TransactionWithCategory,
 } from '@/types/database.types'
 
@@ -18,7 +18,7 @@ interface Props {
   mode: 'transactions' | 'reminders'
   /** Items del día — el caller los filtra. */
   transactions?: TransactionWithCategory[]
-  reminders?: Reminder[]
+  reminders?: ReminderWithCategory[]
 }
 
 function formatLongDate(iso: string): string {
@@ -124,28 +124,39 @@ export function DayDetailSheet({
                 </Text>
               </TouchableOpacity>
             ))
-          : reminders.map((r, idx) => (
-              <TouchableOpacity
-                key={r.id}
-                onPress={() => handleItemPress(r.id)}
-                activeOpacity={0.7}
-                className={`flex-row items-center py-3 ${
-                  idx < reminders.length - 1 ? 'border-b border-border' : ''
-                }`}
-              >
-                <View className="w-9 h-9 rounded-full bg-primary items-center justify-center mr-3">
-                  <Text className="text-base">🔔</Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-white text-sm font-medium" numberOfLines={1}>
-                    {r.description}
-                  </Text>
-                  <Text className="text-muted text-xs mt-0.5">
-                    {r.is_active ? '9:00 AM' : 'Pausado'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+          : reminders.map((r, idx) => {
+              // Mismo patrón que ReminderCard y RecentTransactions:
+              // avatar con icono+color de la categoría. Fallback 🔔
+              // sobre fondo primary si no tiene categoría asignada.
+              const avatarColor = r.category?.color ?? '#4F46E5'
+              const avatarIcon = r.category?.icon ?? '🔔'
+              return (
+                <TouchableOpacity
+                  key={r.id}
+                  onPress={() => handleItemPress(r.id)}
+                  activeOpacity={0.7}
+                  className={`flex-row items-center py-3 ${
+                    idx < reminders.length - 1 ? 'border-b border-border' : ''
+                  }`}
+                >
+                  <View
+                    style={{ backgroundColor: avatarColor }}
+                    className="w-9 h-9 rounded-full items-center justify-center mr-3"
+                  >
+                    <Text className="text-base">{avatarIcon}</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white text-sm font-medium" numberOfLines={1}>
+                      {r.description}
+                    </Text>
+                    <Text className="text-muted text-xs mt-0.5">
+                      {r.category ? `${r.category.name} · ` : ''}
+                      {r.is_active ? '9:00 AM' : 'Pausado'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            })}
       </ScrollView>
 
       <View className="mt-3">
