@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -30,6 +31,7 @@ export default function BudgetsScreen() {
   const { user } = useAuth()
   const [budgets, setBudgets] = useState<BudgetWithSpent[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadBudgets = useCallback(async () => {
     if (!user) return
@@ -85,6 +87,17 @@ export default function BudgetsScreen() {
           />
         }
         renderItem={({ item }) => <BudgetCard budget={item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadBudgets()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB */}

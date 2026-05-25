@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -74,6 +75,7 @@ export default function RemindersScreen() {
   const { user } = useAuth()
   const [reminders, setReminders] = useState<ReminderWithCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadReminders = useCallback(async () => {
     if (!user) return
@@ -129,6 +131,17 @@ export default function RemindersScreen() {
           />
         }
         renderItem={({ item }) => <ReminderCard reminder={item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadReminders()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB */}

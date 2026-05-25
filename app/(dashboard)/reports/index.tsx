@@ -8,7 +8,7 @@
 // Para rangos largos pedimos pageSize 500 — si el user tiene > 500 tx en
 // el rango, el chart subestima.
 import { useCallback, useMemo, useState } from 'react'
-import { ScrollView, View, Text, ActivityIndicator } from 'react-native'
+import { ScrollView, View, Text, ActivityIndicator, RefreshControl } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
@@ -37,6 +37,7 @@ export default function ReportsScreen() {
   const { rates } = useExchangeRates()
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [range, setRange] = useState<ReportRange>('3M')
 
   const loadData = useCallback(async () => {
@@ -122,6 +123,17 @@ export default function ReportsScreen() {
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadData()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       >
         <RangeSelector value={range} onChange={setRange} />
 

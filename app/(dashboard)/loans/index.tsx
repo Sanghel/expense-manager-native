@@ -5,6 +5,7 @@ import {
   SectionList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -25,6 +26,7 @@ export default function LoansScreen() {
   const { user } = useAuth()
   const [loans, setLoans] = useState<LoanWithAccount[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadLoans = useCallback(async () => {
     if (!user) return
@@ -101,6 +103,17 @@ export default function LoansScreen() {
         )}
         renderItem={({ item }) => <LoanCard loan={item} />}
         stickySectionHeadersEnabled={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadLoans()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB */}
