@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getAccounts, deleteAccount } from '@/lib/actions/accounts.actions'
 import { AccountCard } from '@/components/accounts/AccountCard'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { Account, Currency } from '@/types/database.types'
@@ -83,10 +84,11 @@ export default function AccountsScreen() {
             />
           }
           ListEmptyComponent={
-            <View className="items-center mt-20">
-              <Text className="text-muted text-base">No hay cuentas</Text>
-              <Text className="text-muted text-sm mt-1">Toca + para crear una</Text>
-            </View>
+            <EmptyState
+              icon="💳"
+              title="Sin cuentas"
+              description="Toca + para crear tu primera cuenta"
+            />
           }
           contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
         />
