@@ -1,4 +1,7 @@
-// app/(dashboard)/more.tsx
+// app/(dashboard)/profile/index.tsx
+//
+// Pantalla de perfil/configuración. Reemplaza al tab "Más" eliminado en
+// T-5.2 — ahora se accede desde el sheet de Quick Actions (último tile).
 import { useState } from 'react'
 import {
   View,
@@ -17,6 +20,10 @@ import { Icon, type IconName } from '@/components/ui/Icon'
 import { toast } from '@/components/ui/Toast'
 import type { Currency } from '@/types/database.types'
 
+// Los hubs (Cuentas, Categorías, Presupuestos, Metas, Préstamos) están en
+// el menú principal del bottom bar. Esta pantalla se enfoca solo en perfil,
+// preferencias y conexiones del user.
+
 const CURRENCY_OPTIONS: { label: string; value: string }[] = [
   { label: 'COP — Peso Colombiano', value: 'COP' },
   { label: 'USD — Dólar', value: 'USD' },
@@ -33,7 +40,7 @@ function formatDate(iso: string | null): string {
   })
 }
 
-export default function MoreScreen() {
+export default function ProfileScreen() {
   const { user, signOut, refreshUser } = useAuth()
   const [showCurrency, setShowCurrency] = useState(false)
   const [savingCurrency, setSavingCurrency] = useState(false)
@@ -67,8 +74,13 @@ export default function MoreScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-bg">
-      <View className="px-4 py-3 border-b border-border">
-        <Text className="text-white text-xl font-bold">Más opciones</Text>
+      {/* Header con back */}
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
+          <Text className="text-primary text-base">← Volver</Text>
+        </TouchableOpacity>
+        <Text className="text-white text-base font-bold">Perfil</Text>
+        <View style={{ width: 60 }} />
       </View>
 
       <ScrollView
@@ -138,34 +150,6 @@ export default function MoreScreen() {
             </View>
           ) : null}
         </View>
-
-        {/* Datos */}
-        <SectionHeader title="Datos" />
-        <SettingsRow
-          icon="wallet"
-          label="Cuentas"
-          onPress={() => router.push('/accounts')}
-        />
-        <SettingsRow
-          icon="folder-tree"
-          label="Categorías"
-          onPress={() => router.push('/categories')}
-        />
-        <SettingsRow
-          icon="target"
-          label="Presupuestos"
-          onPress={() => router.push('/budgets')}
-        />
-        <SettingsRow
-          icon="piggy"
-          label="Metas de ahorro"
-          onPress={() => router.push('/savings')}
-        />
-        <SettingsRow
-          icon="hand-coins"
-          label="Préstamos"
-          onPress={() => router.push('/loans')}
-        />
 
         {/* Sign out */}
         <View className="px-4 pt-10">

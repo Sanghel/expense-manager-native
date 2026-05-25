@@ -94,7 +94,11 @@ export default function LoginScreen() {
         throw new Error('Tu email no está autorizado para usar la app')
       }
 
-      // Create user in our users table if not exists
+      // Sync user row con los claims más recientes de Google. Para users
+      // existentes: actualiza name + avatar_url (importante para que se
+      // refleje cuando el user cambia su foto en Google, o para arreglar
+      // users legacy que se crearon sin avatar). Para users nuevos: crea
+      // la fila con los defaults.
       const { data: existingUser } = await insforge.database
         .from('users')
         .select('id')
@@ -108,6 +112,16 @@ export default function LoginScreen() {
           avatar_url,
           preferred_currency: 'COP',
         }])
+      } else if (name || avatar_url) {
+        // Solo actualizamos los campos que llegaron — evitamos sobreescribir
+        // con null si Google no devolvió alguno.
+        const patch: Record<string, string> = {}
+        if (name) patch.name = name
+        if (avatar_url) patch.avatar_url = avatar_url
+        await insforge.database
+          .from('users')
+          .update(patch)
+          .eq('email', email)
       }
 
       // Persist session (email-based) and load user profile

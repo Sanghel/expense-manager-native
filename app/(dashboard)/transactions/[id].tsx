@@ -15,6 +15,8 @@ import { FormInput } from '@/components/ui/FormInput'
 import { SelectModal } from '@/components/ui/SelectModal'
 import { PrimaryButton } from '@/components/ui/PrimaryButton'
 import { Icon } from '@/components/ui/Icon'
+import { CurrencyPreview } from '@/components/transactions/CurrencyPreview'
+import { formatCurrency } from '@/lib/utils/currency'
 import type { Category, Account, Currency } from '@/types/database.types'
 
 const CURRENCY_OPTIONS = [
@@ -115,6 +117,20 @@ export default function TransactionFormScreen() {
     ])
   }
 
+  /**
+   * Al elegir una cuenta, hereda la currency de la cuenta. Bloquea el
+   * picker de currency mientras haya cuenta — cada cuenta tiene su moneda
+   * fija, no tiene sentido permitir registrar una tx en USD contra una
+   * cuenta COP. Si el user quiere otra currency, primero quita la cuenta.
+   */
+  function handleAccountChange(newAccountId: string) {
+    setAccountId(newAccountId)
+    if (newAccountId) {
+      const acc = accounts.find((a) => a.id === newAccountId)
+      if (acc) setCurrency(acc.currency)
+    }
+  }
+
   const filteredCategories = categories.filter((c) => c.type === type || c.type === 'both')
   const categoryOptions = filteredCategories.map((c) => ({
     label: `${c.icon ?? ''} ${c.name}`.trim(),
@@ -129,6 +145,14 @@ export default function TransactionFormScreen() {
   ]
   const selectedCategory = categories.find((c) => c.id === categoryId)
   const selectedAccount = accounts.find((a) => a.id === accountId)
+
+  // Derivados de validación UX
+  const accountLocksCurrency = !!accountId
+  const parsedAmount = parseFloat(amount) || 0
+  const cardOverLimit =
+    type === 'expense' &&
+    selectedAccount?.type === 'card' &&
+    parsedAmount > Number(selectedAccount.balance ?? 0)
 
   if (initialLoading) {
     return (
@@ -202,13 +226,23 @@ export default function TransactionFormScreen() {
           placeholder="0.00"
         />
 
-        {/* Moneda */}
+        {/* Equivalente en otras monedas — solo si amount > 0 */}
+        <CurrencyPreview amount={parsedAmount} fromCurrency={currency} />
+
+        {/* Moneda — bloqueada si hay cuenta seleccionada */}
         <View className="mb-4">
-          <Text className="text-muted text-sm mb-1">Moneda</Text>
+          <Text className="text-muted text-sm mb-1">
+            Moneda{accountLocksCurrency ? ' (heredada de la cuenta)' : ''}
+          </Text>
           <TouchableOpacity
-            onPress={() => setShowCurrencyPicker(true)}
-            activeOpacity={0.7}
+            onPress={() => {
+              if (accountLocksCurrency) return
+              setShowCurrencyPicker(true)
+            }}
+            activeOpacity={accountLocksCurrency ? 1 : 0.7}
+            disabled={accountLocksCurrency}
             className="bg-surface border border-border rounded-xl px-4 py-3"
+            style={{ opacity: accountLocksCurrency ? 0.5 : 1 }}
           >
             <Text className="text-white">
               {CURRENCY_OPTIONS.find((o) => o.value === currency)?.label ?? currency}
@@ -242,11 +276,21 @@ export default function TransactionFormScreen() {
           >
             <Text className="text-white">
               {selectedAccount
-                ? `${selectedAccount.icon ?? '💳'} ${selectedAccount.name}`
+                ? `${selectedAccount.icon ?? '💳'} ${selectedAccount.name} (${selectedAccount.currency})`
                 : 'Sin cuenta'}
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Card overlimit warning */}
+        {cardOverLimit && selectedAccount ? (
+          <View className="mb-4 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/40">
+            <Text className="text-red-400 text-xs">
+              El monto excede el cupo disponible (
+              {formatCurrency(Number(selectedAccount.balance), selectedAccount.currency)})
+            </Text>
+          </View>
+        ) : null}
 
         <FormInput
           label="Fecha *"
@@ -297,7 +341,7 @@ export default function TransactionFormScreen() {
         title="Seleccionar Cuenta"
         options={accountOptions}
         selected={accountId}
-        onSelect={(v) => { setAccountId(v); setShowAccountPicker(false) }}
+        onSelect={(v) => { handleAccountChange(v); setShowAccountPicker(false) }}
       />
     </SafeAreaView>
   )
