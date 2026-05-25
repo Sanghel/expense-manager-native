@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sanghel.expensemanager",
+      "buildNumber": "1",
       "infoPlist": {
         "CFBundleURLTypes": [
           {
@@ -27,6 +28,8 @@
       }
     },
     "android": {
+      "package": "com.sanghel.expensemanager",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f0f14"
