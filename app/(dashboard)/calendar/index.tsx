@@ -14,6 +14,7 @@ import { getReminders } from '@/lib/actions/reminders.actions'
 import { CalendarHeader, type CalendarTab } from '@/components/calendar/CalendarHeader'
 import { DayDetailSheet } from '@/components/calendar/DayDetailSheet'
 import { reminderMatchesDate } from '@/lib/utils/reminderMatchesDate'
+import { toast } from '@/components/ui/Toast'
 import { colors } from '@/constants/theme'
 import type {
   ReminderWithCategory,
@@ -105,7 +106,9 @@ export default function CalendarScreen() {
       getReminders(user.id),
     ])
     if (txRes.success && txRes.data) setTransactions(txRes.data.items)
+    else if (!txRes.success) toast.error(txRes.error ?? 'Error al cargar transacciones')
     if (remRes.success && remRes.data) setReminders(remRes.data)
+    else if (!remRes.success) toast.error(remRes.error ?? 'Error al cargar recordatorios')
     setLoading(false)
   }, [user])
 

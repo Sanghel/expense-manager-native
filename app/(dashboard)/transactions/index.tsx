@@ -18,8 +18,10 @@ import {
 import { getCategories } from '@/lib/actions/categories.actions'
 import { getAccounts } from '@/lib/actions/accounts.actions'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Icon } from '@/components/ui/Icon'
 import { SelectModal } from '@/components/ui/SelectModal'
+import { toast } from '@/components/ui/Toast'
 import { useDebounce } from '@/hooks/useDebounce'
 import type {
   TransactionWithCategory,
@@ -134,6 +136,8 @@ export default function TransactionsScreen() {
         }
         setHasMore(result.data.hasMore)
         setPage(pageNum)
+      } else if (!result.success) {
+        toast.error(result.error ?? 'Error al cargar transacciones')
       }
 
       if (mode === 'append') {
@@ -321,18 +325,19 @@ export default function TransactionsScreen() {
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={
-            <View className="items-center mt-20">
-              <Text className="text-muted text-base">
-                {anyFilterActive || debouncedSearch
+            <EmptyState
+              icon={anyFilterActive || debouncedSearch ? '🔍' : '💸'}
+              title={
+                anyFilterActive || debouncedSearch
                   ? 'Sin resultados'
-                  : 'No hay transacciones'}
-              </Text>
-              <Text className="text-muted text-sm mt-1">
-                {anyFilterActive || debouncedSearch
-                  ? 'Ajustá los filtros o limpiálos'
-                  : 'Toca + para crear una'}
-              </Text>
-            </View>
+                  : 'Sin transacciones'
+              }
+              description={
+                anyFilterActive || debouncedSearch
+                  ? 'Ajusta los filtros o limpiálos para ver más'
+                  : 'Toca + para crear tu primera transacción'
+              }
+            />
           }
           contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
         />
@@ -341,6 +346,8 @@ export default function TransactionsScreen() {
       <TouchableOpacity
         onPress={() => router.push('/(dashboard)/transactions/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva transacción"
         className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center"
         style={{ elevation: 4 }}
       >

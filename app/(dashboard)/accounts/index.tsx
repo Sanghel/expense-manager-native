@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getAccounts, deleteAccount } from '@/lib/actions/accounts.actions'
 import { AccountCard } from '@/components/accounts/AccountCard'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { Account, Currency } from '@/types/database.types'
 
@@ -18,6 +20,7 @@ export default function AccountsScreen() {
     if (!user) return
     const result = await getAccounts(user.id)
     if (result.success && result.data) setAccounts(result.data)
+    else if (!result.success) toast.error(result.error ?? 'Error al cargar cuentas')
     setLoading(false)
     setRefreshing(false)
   }, [user])
@@ -81,10 +84,11 @@ export default function AccountsScreen() {
             />
           }
           ListEmptyComponent={
-            <View className="items-center mt-20">
-              <Text className="text-muted text-base">No hay cuentas</Text>
-              <Text className="text-muted text-sm mt-1">Toca + para crear una</Text>
-            </View>
+            <EmptyState
+              icon="💳"
+              title="Sin cuentas"
+              description="Toca + para crear tu primera cuenta"
+            />
           }
           contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
         />
@@ -93,6 +97,8 @@ export default function AccountsScreen() {
       <TouchableOpacity
         onPress={() => router.push('/(dashboard)/accounts/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva cuenta"
         className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center"
         style={{ elevation: 4 }}
       >

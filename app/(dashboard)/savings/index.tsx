@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -12,6 +13,8 @@ import { useAuth } from '@/context/AuthContext'
 import { getSavingsGoals } from '@/lib/actions/savings.actions'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ListLoadingSkeleton } from '@/components/ui/ListLoadingSkeleton'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { SavingsGoal } from '@/types/database.types'
 
@@ -36,11 +39,13 @@ export default function SavingsScreen() {
   const { user } = useAuth()
   const [goals, setGoals] = useState<SavingsGoal[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadGoals = useCallback(async () => {
     if (!user) return
     const res = await getSavingsGoals(user.id)
     if (res.success && res.data) setGoals(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar metas')
     setLoading(false)
   }, [user])
 
@@ -59,9 +64,14 @@ export default function SavingsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-bg items-center justify-center">
-        <ActivityIndicator color="#4F46E5" />
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+          <View style={{ width: 60 }} />
+          <Text className="text-white text-base font-bold">Metas de ahorro</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <ListLoadingSkeleton />
+      </SafeAreaView>
     )
   }
 
@@ -90,12 +100,25 @@ export default function SavingsScreen() {
           />
         }
         renderItem={({ item }) => <GoalCard goal={item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadGoals()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB */}
       <TouchableOpacity
         onPress={() => router.push('/savings/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva meta de ahorro"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',
