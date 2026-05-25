@@ -10,7 +10,7 @@
 //
 // Refresh on focus con useFocusEffect — al volver al tab se actualiza.
 import { useCallback, useMemo, useState } from 'react'
-import { ScrollView, View, Text, ActivityIndicator } from 'react-native'
+import { ScrollView, View, Text, ActivityIndicator, RefreshControl } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
@@ -27,6 +27,7 @@ import { RecentTransactions } from '@/components/dashboard/RecentTransactions'
 import { ActiveBudgets } from '@/components/dashboard/ActiveBudgets'
 import { AccumulatedBalanceChart } from '@/components/charts/AccumulatedBalanceChart'
 import { ExpensesByCategoryChart } from '@/components/charts/ExpensesByCategoryChart'
+import { toast } from '@/components/ui/Toast'
 import type {
   BudgetWithSpent,
   TransactionWithCategory,
@@ -45,6 +46,7 @@ export default function DashboardScreen() {
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
   const [budgets, setBudgets] = useState<BudgetWithSpent[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadData = useCallback(async () => {
     if (!user) return
@@ -62,9 +64,13 @@ export default function DashboardScreen() {
 
     if (txRes.success && txRes.data) {
       setTransactions(txRes.data.items)
+    } else if (!txRes.success) {
+      toast.error(txRes.error ?? 'Error al cargar transacciones')
     }
     if (budgetsRes.success && budgetsRes.data) {
       setBudgets(budgetsRes.data)
+    } else if (!budgetsRes.success) {
+      toast.error(budgetsRes.error ?? 'Error al cargar presupuestos')
     }
     setLoading(false)
   }, [user])
@@ -128,6 +134,17 @@ export default function DashboardScreen() {
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadData()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       >
         <SummaryCards
           transactions={transactions}

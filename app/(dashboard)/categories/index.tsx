@@ -5,12 +5,15 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getCategories } from '@/lib/actions/categories.actions'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ListLoadingSkeleton } from '@/components/ui/ListLoadingSkeleton'
+import { toast } from '@/components/ui/Toast'
 import type { Category, CategoryType } from '@/types/database.types'
 
 const TYPE_LABELS: Record<CategoryType, string> = {
@@ -29,12 +32,15 @@ export default function CategoriesScreen() {
   const { user } = useAuth()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadCategories = useCallback(async () => {
     if (!user) return
     const result = await getCategories(user.id)
     if (result.success && result.data) {
       setCategories(result.data)
+    } else if (!result.success) {
+      toast.error(result.error ?? 'Error al cargar categorías')
     }
     setLoading(false)
   }, [user])
@@ -54,9 +60,14 @@ export default function CategoriesScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-bg items-center justify-center">
-        <ActivityIndicator color="#4F46E5" />
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+          <View style={{ width: 60 }} />
+          <Text className="text-white text-base font-bold">Categorías</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <ListLoadingSkeleton />
+      </SafeAreaView>
     )
   }
 
@@ -133,12 +144,25 @@ export default function CategoriesScreen() {
             </TouchableOpacity>
           )
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadCategories()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB — crear nueva */}
       <TouchableOpacity
         onPress={() => router.push('/categories/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva categoría"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',

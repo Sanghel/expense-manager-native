@@ -8,7 +8,7 @@
 // Para rangos largos pedimos pageSize 500 — si el user tiene > 500 tx en
 // el rango, el chart subestima.
 import { useCallback, useMemo, useState } from 'react'
-import { ScrollView, View, Text, ActivityIndicator } from 'react-native'
+import { ScrollView, View, Text, ActivityIndicator, RefreshControl } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
@@ -29,6 +29,7 @@ import { AccumulatedBalanceChart } from '@/components/charts/AccumulatedBalanceC
 import { ExpensesByCategoryChart } from '@/components/charts/ExpensesByCategoryChart'
 import { MonthlyComparisonChart } from '@/components/charts/MonthlyComparisonChart'
 import { RangeSelector } from '@/components/reports/RangeSelector'
+import { toast } from '@/components/ui/Toast'
 import type { TransactionWithCategory } from '@/types/database.types'
 
 export default function ReportsScreen() {
@@ -36,6 +37,7 @@ export default function ReportsScreen() {
   const { rates } = useExchangeRates()
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [range, setRange] = useState<ReportRange>('3M')
 
   const loadData = useCallback(async () => {
@@ -47,6 +49,8 @@ export default function ReportsScreen() {
     )
     if (res.success && res.data) {
       setTransactions(res.data.items)
+    } else if (!res.success) {
+      toast.error(res.error ?? 'Error al cargar reportes')
     }
     setLoading(false)
   }, [user])
@@ -119,6 +123,17 @@ export default function ReportsScreen() {
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadData()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       >
         <RangeSelector value={range} onChange={setRange} />
 

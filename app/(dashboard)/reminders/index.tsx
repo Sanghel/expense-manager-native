@@ -5,12 +5,15 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getReminders } from '@/lib/actions/reminders.actions'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ListLoadingSkeleton } from '@/components/ui/ListLoadingSkeleton'
+import { toast } from '@/components/ui/Toast'
 import type {
   ReminderFrequency,
   ReminderWithCategory,
@@ -73,11 +76,13 @@ export default function RemindersScreen() {
   const { user } = useAuth()
   const [reminders, setReminders] = useState<ReminderWithCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const loadReminders = useCallback(async () => {
     if (!user) return
     const res = await getReminders(user.id)
     if (res.success && res.data) setReminders(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar recordatorios')
     setLoading(false)
   }, [user])
 
@@ -96,9 +101,14 @@ export default function RemindersScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-bg items-center justify-center">
-        <ActivityIndicator color="#4F46E5" />
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-bg">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+          <View style={{ width: 60 }} />
+          <Text className="text-white text-base font-bold">Recordatorios</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        <ListLoadingSkeleton />
+      </SafeAreaView>
     )
   }
 
@@ -127,12 +137,25 @@ export default function RemindersScreen() {
           />
         }
         renderItem={({ item }) => <ReminderCard reminder={item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true)
+              await loadReminders()
+              setRefreshing(false)
+            }}
+            tintColor="#4F46E5"
+          />
+        }
       />
 
       {/* FAB */}
       <TouchableOpacity
         onPress={() => router.push('/reminders/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nuevo recordatorio"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',
