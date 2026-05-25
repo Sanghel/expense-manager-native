@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { Modal, Pressable, View, useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +28,13 @@ interface BottomSheetProps {
  *
  * NO incluye drag-to-dismiss ni snap points (para eso `@gorhom/bottom-sheet`).
  * Sirve para menús de acciones rápidas, action sheets simples y pickers.
+ *
+ * **Bug fix:** sin `presentationStyle="overFullScreen"` en iOS, el Modal NO
+ * cubre el área del tab bar / safe area inferior — el overlay queda "corto"
+ * y el tab bar se ve dimmed pero visible debajo del card. Con overFullScreen
+ * el modal sí cubre toda la ventana. Además aplicamos `paddingBottom` con
+ * el safe area inset para que el contenido del card no quede pegado al
+ * home indicator.
  */
 export function BottomSheet({
   visible,
@@ -35,6 +43,7 @@ export function BottomSheet({
   maxHeightPercent = 60,
 }: BottomSheetProps) {
   const { height } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
   const translateY = useSharedValue(height) // empieza fuera de pantalla (abajo)
 
   useEffect(() => {
@@ -76,6 +85,7 @@ export function BottomSheet({
       animationType="none" // animamos nosotros con reanimated
       onRequestClose={handleClose}
       statusBarTranslucent
+      presentationStyle="overFullScreen"
     >
       {/* Overlay tap-to-close */}
       <Pressable
@@ -88,6 +98,10 @@ export function BottomSheet({
             style={[
               {
                 maxHeight: `${maxHeightPercent}%`,
+                // El safe area inferior se mete dentro del card como padding
+                // — así el card se extiende a la base de la pantalla y los
+                // botones quedan por encima del home indicator / tab bar.
+                paddingBottom: insets.bottom,
               },
               animatedStyle,
             ]}
