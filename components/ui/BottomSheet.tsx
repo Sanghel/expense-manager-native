@@ -87,20 +87,25 @@ export function BottomSheet({
       statusBarTranslucent
       presentationStyle="overFullScreen"
     >
-      {/* Overlay tap-to-close */}
-      <Pressable
-        className="flex-1 bg-black/60 justify-end"
-        onPress={handleClose}
-      >
-        {/* El card mismo no propaga el tap */}
-        <Pressable onPress={() => {}}>
+      {/* Overlay tap-to-close — cubre toda la ventana */}
+      <Pressable className="flex-1 bg-black/60" onPress={handleClose}>
+        {/*
+          Container del card con posicionamiento absoluto al borde inferior
+          REAL de la ventana. Usar `justify-end` en el flex parent deja un
+          gap cuando el modal no cubre exactamente todo el viewport
+          (caso típico cuando el tab bar de expo-router se renderiza en
+          una capa intermedia). Con `bottom: 0` absoluto el card siempre
+          queda pegado al borde de la pantalla y el safe area inset se
+          mete como padding interno para los botones.
+        */}
+        <Pressable
+          onPress={() => {}}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
+        >
           <Animated.View
             style={[
               {
                 maxHeight: `${maxHeightPercent}%`,
-                // El safe area inferior se mete dentro del card como padding
-                // — así el card se extiende a la base de la pantalla y los
-                // botones quedan por encima del home indicator / tab bar.
                 paddingBottom: insets.bottom,
               },
               animatedStyle,
