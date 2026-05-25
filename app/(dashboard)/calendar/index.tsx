@@ -3,10 +3,10 @@
 // Calendario con 2 tabs (Transacciones / Recordatorios) usando
 // react-native-calendars. Markers según el tab activo; tap día abre
 // DayDetailSheet con la lista del día + botón de crear.
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { View, Text, ActivityIndicator } from 'react-native'
 import { Calendar, LocaleConfig } from 'react-native-calendars'
-import { useFocusEffect } from 'expo-router'
+import { useFocusEffect, useNavigation } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getTransactions } from '@/lib/actions/transactions.actions'
@@ -65,6 +65,7 @@ function currentMonthIso(): string {
 
 export default function CalendarScreen() {
   const { user } = useAuth()
+  const navigation = useNavigation()
   const [tab, setTab] = useState<CalendarTab>('transactions')
   const [loading, setLoading] = useState(true)
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([])
@@ -72,6 +73,27 @@ export default function CalendarScreen() {
   const [visibleMonth, setVisibleMonth] = useState<string>(currentMonthIso())
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+
+  /**
+   * Cuando el DayDetailSheet está abierto, ocultamos el tab bar del navegador
+   * padre. Esto resuelve el bug de "transparencia debajo del card" que aparece
+   * cuando un Modal se monta dentro de un screen de tab navigator — el tab
+   * bar se renderiza en una capa intermedia que el modal no cubre.
+   *
+   * Al cerrarse el sheet (selectedDay === null), restauramos el tab bar.
+   */
+  useEffect(() => {
+    const parent = navigation.getParent()
+    if (!parent) return
+    parent.setOptions({
+      tabBarStyle: selectedDay
+        ? { display: 'none' }
+        : {
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
+          },
+    })
+  }, [selectedDay, navigation])
 
   // Cargamos datasets completos al focus — el calendario es vista panorámica,
   // no se beneficia mucho de paginar por mes (los reminders no tienen filtro
