@@ -107,6 +107,8 @@ export default function LoansScreen() {
       <TouchableOpacity
         onPress={() => router.push('/loans/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nuevo préstamo"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',

@@ -95,6 +95,8 @@ export default function AccountsScreen() {
       <TouchableOpacity
         onPress={() => router.push('/(dashboard)/accounts/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva cuenta"
         className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center"
         style={{ elevation: 4 }}
       >

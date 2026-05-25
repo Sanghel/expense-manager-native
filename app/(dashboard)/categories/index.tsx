@@ -142,6 +142,8 @@ export default function CategoriesScreen() {
       <TouchableOpacity
         onPress={() => router.push('/categories/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nueva categoría"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',

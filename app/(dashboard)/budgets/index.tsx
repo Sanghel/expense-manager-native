@@ -91,6 +91,8 @@ export default function BudgetsScreen() {
       <TouchableOpacity
         onPress={() => router.push('/budgets/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nuevo presupuesto"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',

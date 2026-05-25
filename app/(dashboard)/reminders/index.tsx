@@ -135,6 +135,8 @@ export default function RemindersScreen() {
       <TouchableOpacity
         onPress={() => router.push('/reminders/new')}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Crear nuevo recordatorio"
         className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-primary items-center justify-center shadow-lg"
         style={{
           shadowColor: '#000',
