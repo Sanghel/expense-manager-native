@@ -27,6 +27,7 @@ import { RecentTransactions } from '@/components/dashboard/RecentTransactions'
 import { ActiveBudgets } from '@/components/dashboard/ActiveBudgets'
 import { AccumulatedBalanceChart } from '@/components/charts/AccumulatedBalanceChart'
 import { ExpensesByCategoryChart } from '@/components/charts/ExpensesByCategoryChart'
+import { toast } from '@/components/ui/Toast'
 import type {
   BudgetWithSpent,
   TransactionWithCategory,
@@ -62,9 +63,13 @@ export default function DashboardScreen() {
 
     if (txRes.success && txRes.data) {
       setTransactions(txRes.data.items)
+    } else if (!txRes.success) {
+      toast.error(txRes.error ?? 'Error al cargar transacciones')
     }
     if (budgetsRes.success && budgetsRes.data) {
       setBudgets(budgetsRes.data)
+    } else if (!budgetsRes.success) {
+      toast.error(budgetsRes.error ?? 'Error al cargar presupuestos')
     }
     setLoading(false)
   }, [user])

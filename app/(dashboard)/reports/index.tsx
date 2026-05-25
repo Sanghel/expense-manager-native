@@ -29,6 +29,7 @@ import { AccumulatedBalanceChart } from '@/components/charts/AccumulatedBalanceC
 import { ExpensesByCategoryChart } from '@/components/charts/ExpensesByCategoryChart'
 import { MonthlyComparisonChart } from '@/components/charts/MonthlyComparisonChart'
 import { RangeSelector } from '@/components/reports/RangeSelector'
+import { toast } from '@/components/ui/Toast'
 import type { TransactionWithCategory } from '@/types/database.types'
 
 export default function ReportsScreen() {
@@ -47,6 +48,8 @@ export default function ReportsScreen() {
     )
     if (res.success && res.data) {
       setTransactions(res.data.items)
+    } else if (!res.success) {
+      toast.error(res.error ?? 'Error al cargar reportes')
     }
     setLoading(false)
   }, [user])

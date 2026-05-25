@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getLoans } from '@/lib/actions/loans.actions'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { LoanWithAccount } from '@/types/database.types'
 
@@ -29,6 +30,7 @@ export default function LoansScreen() {
     if (!user) return
     const res = await getLoans(user.id)
     if (res.success && res.data) setLoans(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar préstamos')
     setLoading(false)
   }, [user])
 

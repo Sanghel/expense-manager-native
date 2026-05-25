@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getAccounts, deleteAccount } from '@/lib/actions/accounts.actions'
 import { AccountCard } from '@/components/accounts/AccountCard'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { Account, Currency } from '@/types/database.types'
 
@@ -18,6 +19,7 @@ export default function AccountsScreen() {
     if (!user) return
     const result = await getAccounts(user.id)
     if (result.success && result.data) setAccounts(result.data)
+    else if (!result.success) toast.error(result.error ?? 'Error al cargar cuentas')
     setLoading(false)
     setRefreshing(false)
   }, [user])

@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getSavingsGoals } from '@/lib/actions/savings.actions'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { SavingsGoal } from '@/types/database.types'
 
@@ -41,6 +42,7 @@ export default function SavingsScreen() {
     if (!user) return
     const res = await getSavingsGoals(user.id)
     if (res.success && res.data) setGoals(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar metas')
     setLoading(false)
   }, [user])
 

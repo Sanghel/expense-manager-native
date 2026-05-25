@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { getBudgets } from '@/lib/actions/budgets.actions'
 import { ProgressBar, defaultColor } from '@/components/ui/ProgressBar'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import { formatCurrency } from '@/lib/utils/currency'
 import type { BudgetWithSpent } from '@/types/database.types'
 
@@ -34,6 +35,7 @@ export default function BudgetsScreen() {
     if (!user) return
     const res = await getBudgets(user.id)
     if (res.success && res.data) setBudgets(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar presupuestos')
     setLoading(false)
   }, [user])
 

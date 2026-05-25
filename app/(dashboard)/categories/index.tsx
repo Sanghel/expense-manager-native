@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getCategories } from '@/lib/actions/categories.actions'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import type { Category, CategoryType } from '@/types/database.types'
 
 const TYPE_LABELS: Record<CategoryType, string> = {
@@ -35,6 +36,8 @@ export default function CategoriesScreen() {
     const result = await getCategories(user.id)
     if (result.success && result.data) {
       setCategories(result.data)
+    } else if (!result.success) {
+      toast.error(result.error ?? 'Error al cargar categorías')
     }
     setLoading(false)
   }, [user])

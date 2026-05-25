@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
 import { getReminders } from '@/lib/actions/reminders.actions'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { toast } from '@/components/ui/Toast'
 import type {
   ReminderFrequency,
   ReminderWithCategory,
@@ -78,6 +79,7 @@ export default function RemindersScreen() {
     if (!user) return
     const res = await getReminders(user.id)
     if (res.success && res.data) setReminders(res.data)
+    else if (!res.success) toast.error(res.error ?? 'Error al cargar recordatorios')
     setLoading(false)
   }, [user])
 

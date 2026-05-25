@@ -20,6 +20,7 @@ import { getAccounts } from '@/lib/actions/accounts.actions'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
 import { Icon } from '@/components/ui/Icon'
 import { SelectModal } from '@/components/ui/SelectModal'
+import { toast } from '@/components/ui/Toast'
 import { useDebounce } from '@/hooks/useDebounce'
 import type {
   TransactionWithCategory,
@@ -134,6 +135,8 @@ export default function TransactionsScreen() {
         }
         setHasMore(result.data.hasMore)
         setPage(pageNum)
+      } else if (!result.success) {
+        toast.error(result.error ?? 'Error al cargar transacciones')
       }
 
       if (mode === 'append') {
