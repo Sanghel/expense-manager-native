@@ -20,6 +20,7 @@ import {
 } from '@/lib/utils/dashboard'
 import {
   buildMonthlyAggregates,
+  buildRangeTotals,
   RANGE_DAYS,
   RANGE_MONTHS,
   RANGE_LABEL,
@@ -29,6 +30,7 @@ import { AccumulatedBalanceChart } from '@/components/charts/AccumulatedBalanceC
 import { ExpensesByCategoryChart } from '@/components/charts/ExpensesByCategoryChart'
 import { MonthlyComparisonChart } from '@/components/charts/MonthlyComparisonChart'
 import { RangeSelector } from '@/components/reports/RangeSelector'
+import { ReportStatistics } from '@/components/reports/ReportStatistics'
 import { toast } from '@/components/ui/Toast'
 import type { TransactionWithCategory } from '@/types/database.types'
 
@@ -101,6 +103,16 @@ export default function ReportsScreen() {
     [transactions, range, preferredCurrency, rates]
   )
 
+  const rangeTotals = useMemo(
+    () =>
+      buildRangeTotals(transactions, {
+        days: RANGE_DAYS[range],
+        targetCurrency: preferredCurrency,
+        rates,
+      }),
+    [transactions, range, preferredCurrency, rates]
+  )
+
   if (loading) {
     return (
       <SafeAreaView edges={['top']} className="flex-1 bg-bg">
@@ -136,6 +148,8 @@ export default function ReportsScreen() {
         }
       >
         <RangeSelector value={range} onChange={setRange} />
+
+        <ReportStatistics totals={rangeTotals} currency={preferredCurrency} />
 
         <AccumulatedBalanceChart
           data={balanceSeries}
