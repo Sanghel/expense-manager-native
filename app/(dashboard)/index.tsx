@@ -10,7 +10,7 @@
 //
 // Refresh on focus con useFocusEffect — al volver al tab se actualiza.
 import { useCallback, useMemo, useState } from 'react'
-import { ScrollView, View, Text, ActivityIndicator, RefreshControl } from 'react-native'
+import { ScrollView, View, Text, Image, ActivityIndicator, RefreshControl } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
@@ -124,11 +124,19 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-bg">
-      <View className="px-4 py-3 border-b border-border">
-        <Text className="text-white text-xl font-bold">Dashboard</Text>
-        <Text className="text-muted text-xs mt-0.5">
-          {user?.name ? `Hola, ${user.name}` : MONTH_LABEL} · {MONTH_LABEL}
-        </Text>
+      <View className="px-4 py-3 border-b border-border flex-row items-center gap-3">
+        <Image
+          source={require('@/assets/icon.png')}
+          style={{ width: 36, height: 36 }}
+          resizeMode="contain"
+          accessibilityLabel="Logo de Expense Manager"
+        />
+        <View className="flex-1">
+          <Text className="text-white text-xl font-bold">Dashboard</Text>
+          <Text className="text-muted text-xs mt-0.5">
+            {user?.name ? `Hola, ${user.name}` : MONTH_LABEL} · {MONTH_LABEL}
+          </Text>
+        </View>
       </View>
 
       <ScrollView
