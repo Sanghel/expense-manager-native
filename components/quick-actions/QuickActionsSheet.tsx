@@ -48,15 +48,9 @@ const TILES: ActionTile[] = [
   },
   {
     icon: 'target',
-    label: 'Presupuestos',
-    route: '/budgets',
+    label: 'Planificación',
+    route: '/planning',
     color: '#f59e0b',
-  },
-  {
-    icon: 'piggy',
-    label: 'Metas de ahorro',
-    route: '/savings',
-    color: '#10b981',
   },
   {
     icon: 'hand-coins',
