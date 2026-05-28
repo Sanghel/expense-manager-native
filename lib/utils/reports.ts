@@ -109,3 +109,52 @@ export function buildMonthlyAggregates(
     }
   })
 }
+
+export interface RangeTotals {
+  totalIncome: number
+  totalExpense: number
+  balance: number
+  transactionCount: number
+}
+
+/**
+ * Suma ingresos / gastos / balance de las transactions que caen dentro
+ * de los últimos `days` días, convertidos a `targetCurrency`.
+ *
+ * Cutoff inclusivo: `cutoff = today - (days - 1)` para que `days=30`
+ * cubra 30 días completos incluyendo hoy.
+ */
+export function buildRangeTotals(
+  transactions: TransactionWithCategory[],
+  options: {
+    days: number
+    targetCurrency: Currency
+    rates: ExchangeRate[]
+  }
+): RangeTotals {
+  const { days, targetCurrency, rates } = options
+  const cutoff = new Date()
+  cutoff.setHours(0, 0, 0, 0)
+  cutoff.setDate(cutoff.getDate() - (days - 1))
+  const cutoffISO = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`
+
+  let totalIncome = 0
+  let totalExpense = 0
+  let transactionCount = 0
+
+  for (const t of transactions) {
+    if (t.date < cutoffISO) continue
+    const amount =
+      Number(t.amount) * getRate(t.currency, targetCurrency, rates)
+    if (t.type === 'income') totalIncome += amount
+    else if (t.type === 'expense') totalExpense += amount
+    transactionCount++
+  }
+
+  return {
+    totalIncome,
+    totalExpense,
+    balance: totalIncome - totalExpense,
+    transactionCount,
+  }
+}
