@@ -30,8 +30,10 @@ import { createTransaction } from '@/lib/actions/transactions.actions'
 import { categorizePurchaseText } from '@/lib/services/chat.service'
 import { MessageBubble } from '@/components/chat/MessageBubble'
 import { TransactionPreview } from '@/components/chat/TransactionPreview'
+import { MicButton } from '@/components/chat/MicButton'
 import { Icon } from '@/components/ui/Icon'
 import { toast } from '@/components/ui/Toast'
+import { loadHistory, saveHistory } from '@/lib/storage/chat-history'
 import type { Category } from '@/types/database.types'
 import type { CategorizedTransaction } from '@/lib/services/chat.service'
 
@@ -47,22 +49,51 @@ type ChatItem =
 const WELCOME_TEXT =
   '¡Hola! Cuéntame qué gastaste o ingresaste y lo registro por ti. Ejemplos:\n\n• "Gasté 25.000 en café"\n• "Recibí 100 dólares de freelance ayer"'
 
+const WELCOME_ITEM: ChatItem = {
+  kind: 'message',
+  id: 'welcome',
+  role: 'assistant',
+  text: WELCOME_TEXT,
+}
+
 export default function ChatScreen() {
   const { user } = useAuth()
   const [categories, setCategories] = useState<Category[]>([])
-  const [items, setItems] = useState<ChatItem[]>([
-    { kind: 'message', id: 'welcome', role: 'assistant', text: WELCOME_TEXT },
-  ])
+  const [items, setItems] = useState<ChatItem[]>([WELCOME_ITEM])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const listRef = useRef<FlatList>(null)
 
+  // Cargar categorías + historial al montar
   useEffect(() => {
     if (!user) return
     getCategories(user.id).then((res) => {
       if (res.success && res.data) setCategories(res.data)
     })
+    loadHistory(user.id).then((stored) => {
+      if (stored.length > 0) {
+        // Si la última preview quedó en 'creating' por un cierre abrupto,
+        // la rebajamos a 'pending' para que el user pueda decidir.
+        const recovered = stored.map((it) =>
+          it.kind === 'preview' && it.status === 'creating'
+            ? { ...it, status: 'pending' as const }
+            : it
+        )
+        setItems([WELCOME_ITEM, ...recovered])
+      }
+      setHydrated(true)
+    })
   }, [user])
+
+  // Guardar historial cada vez que cambia. Omitimos el welcome item (siempre
+  // se reinyecta al cargar). Solo guardamos después de hidratar para evitar
+  // sobrescribir el storage durante el load inicial.
+  useEffect(() => {
+    if (!user || !hydrated) return
+    const toStore = items.filter((it) => it.id !== 'welcome')
+    saveHistory(user.id, toStore)
+  }, [items, user, hydrated])
 
   const categoriesById = useCallback(
     (id: string) => categories.find((c) => c.id === id) ?? null,
@@ -188,11 +219,16 @@ export default function ChatScreen() {
 
         {/* Input bar */}
         <View className="flex-row items-end gap-2 px-3 py-2 border-t border-border bg-bg">
+          <MicButton
+            disabled={sending}
+            onPartial={setInput}
+            onFinal={setInput}
+          />
           <View className="flex-1 bg-surface border border-border rounded-2xl px-3 py-2">
             <TextInput
               value={input}
               onChangeText={setInput}
-              placeholder="Escribe tu gasto o ingreso…"
+              placeholder="Escribe o usa el micrófono…"
               placeholderTextColor="#6b7280"
               multiline
               maxLength={500}
