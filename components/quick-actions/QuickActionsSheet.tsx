@@ -35,6 +35,12 @@ const TILES: ActionTile[] = [
     color: '#4F46E5',
   },
   {
+    icon: 'sparkles',
+    label: 'Chat IA',
+    route: '/chat',
+    color: '#a855f7',
+  },
+  {
     icon: 'wallet',
     label: 'Cuentas',
     route: '/accounts',

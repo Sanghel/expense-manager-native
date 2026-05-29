@@ -111,6 +111,7 @@ export default function DashboardLayout() {
         <Tabs.Screen name="planning" options={{ href: null }} />
         <Tabs.Screen name="loans" options={{ href: null }} />
         <Tabs.Screen name="reminders" options={{ href: null }} />
+        <Tabs.Screen name="chat" options={{ href: null }} />
       </Tabs>
 
       <QuickActionsSheet
