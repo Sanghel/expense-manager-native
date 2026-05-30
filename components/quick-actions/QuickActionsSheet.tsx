@@ -35,6 +35,12 @@ const TILES: ActionTile[] = [
     color: '#4F46E5',
   },
   {
+    icon: 'sparkles',
+    label: 'Chat IA',
+    route: '/chat',
+    color: '#a855f7',
+  },
+  {
     icon: 'wallet',
     label: 'Cuentas',
     route: '/accounts',
@@ -48,15 +54,9 @@ const TILES: ActionTile[] = [
   },
   {
     icon: 'target',
-    label: 'Presupuestos',
-    route: '/budgets',
+    label: 'Planificación',
+    route: '/planning',
     color: '#f59e0b',
-  },
-  {
-    icon: 'piggy',
-    label: 'Metas de ahorro',
-    route: '/savings',
-    color: '#10b981',
   },
   {
     icon: 'hand-coins',

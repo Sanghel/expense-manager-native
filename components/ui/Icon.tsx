@@ -21,6 +21,8 @@ import {
   FolderTree,
   Bell,
   Calendar as CalendarIcon,
+  Send,
+  Sparkles,
 } from 'lucide-react-native'
 
 /**
@@ -56,6 +58,8 @@ const ICONS = {
   'folder-tree': FolderTree,
   bell: Bell,
   calendar: CalendarIcon,
+  send: Send,
+  sparkles: Sparkles,
 } as const
 
 export type IconName = keyof typeof ICONS

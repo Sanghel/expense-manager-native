@@ -73,7 +73,10 @@ export async function getTransactions(
     const from = (page - 1) * pageSize
     const to = from + pageSize // pedimos 1 extra para detectar hasMore
 
-    const { data, error } = await query.order('date', { ascending: false }).range(from, to)
+    const { data, error } = await query
+      .order('date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(from, to)
     if (error) throw error
 
     const rows = (data ?? []) as TransactionWithCategory[]

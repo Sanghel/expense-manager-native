@@ -45,7 +45,20 @@
       "expo-router",
       "expo-secure-store",
       "expo-web-browser",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Permite que la app grabe tu voz para transcribirla a texto en el chat.",
+          "speechRecognitionPermission": "Permite que la app convierta tu voz en texto para registrar transacciones."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": { "deploymentTarget": "16.4" }
+        }
+      ]
     ]
   }
 }

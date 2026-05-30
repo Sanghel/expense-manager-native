@@ -1,5 +1,5 @@
 // app/(auth)/login.tsx
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import { useState } from 'react'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
@@ -139,6 +139,12 @@ export default function LoginScreen() {
   return (
     <View className="flex-1 bg-bg items-center justify-center px-8 gap-8">
       <View className="items-center gap-3">
+        <Image
+          source={require('@/assets/icon.png')}
+          style={{ width: 120, height: 120 }}
+          resizeMode="contain"
+          accessibilityLabel="Logo de Expense Manager"
+        />
         <Text className="text-white text-3xl font-bold">Expense Manager</Text>
         <Text className="text-muted text-base text-center">
           Controla tus finanzas personales
